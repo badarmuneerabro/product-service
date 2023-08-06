@@ -53,7 +53,8 @@ public class ProductServiceImpl implements ProductService
 	public ProductDTO getProductById(String id) 
 	{
 		Product product = productRepository.findById(id).orElse(null);
-		
+		if(product == null)
+			return null;
 		ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
 		
 		return productDTO;

@@ -3,10 +3,13 @@ package com.shop.productservice.controllers;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.shop.productservice.dto.ProductDTO;
+import com.shop.productservice.exceptions.ResourceNotFoundException;
 import com.shop.productservice.model.Product;
 import com.shop.productservice.services.ProductService;
 
@@ -42,7 +46,7 @@ public class ProductRestController
 	
 	@PostMapping("/")
 	@CrossOrigin
-	public ResponseEntity<?> saveProduct(@RequestBody ProductDTO productDTO) 
+	public ResponseEntity<?> saveProduct(@Valid @RequestBody ProductDTO productDTO)  
 	{
 		Product product = productService.saveProduct(productDTO);
 		
@@ -57,9 +61,12 @@ public class ProductRestController
 	
 	@GetMapping("/{productId}")
 	@CrossOrigin
-	public ResponseEntity<ProductDTO> getProduct(@PathVariable("productId") String productId)
+	public ResponseEntity<ProductDTO> getProduct(@PathVariable("productId") String productId) throws ResourceNotFoundException
 	{
 		ProductDTO productDTO = productService.getProductById(productId);
+		
+		if(productDTO == null)
+			throw new ResourceNotFoundException("Product with id=" + productId + " not found.");
 		
 		return new ResponseEntity<>(productDTO, HttpStatus.OK);
 	}
@@ -68,8 +75,12 @@ public class ProductRestController
 	@PutMapping("/{productId}")
 	@CrossOrigin
 	public ResponseEntity<ProductDTO> updateProduct(@PathVariable("productId") String productId, @RequestBody ProductDTO productDTO)
+									throws ResourceNotFoundException
 	{
 		ProductDTO product = productService.getProductById(productId);
+		
+		if(product == null)
+			throw new ResourceNotFoundException("Product with id=" + productId + " not found.");
 		
 		product.setId(productId);
 		product.setCategory(productDTO.getCategory());
@@ -86,12 +97,18 @@ public class ProductRestController
 	
 	@DeleteMapping("/{productId}")
 	@CrossOrigin
-	public ResponseEntity<?> deleteProduct(@PathVariable("productId") String productId)
+	public ResponseEntity<?> deleteProduct(@PathVariable("productId") String productId) throws ResourceNotFoundException
 	{
+		ProductDTO productDTO = productService.getProductById(productId);
+		
+		if(productDTO == null)
+			throw new ResourceNotFoundException("Product with id = " + productId + " not found.");
 		productService.deleteProduct(productId);
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	
 	
 
 }

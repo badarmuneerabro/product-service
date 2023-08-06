@@ -2,14 +2,30 @@ package com.shop.productservice.dto;
 
 import java.math.BigInteger;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
 public class ProductDTO 
 {
 	private String id;
+	
+	@NotBlank(message = "Product name is required.")
 	private String name;
+	
+	@Size(min = 20, max = 200, message = "Description must not exceed 200 characters.")
+	@NotBlank(message = "Description is required.")
 	private String description;
+	
 	private String category;
-	private double unitPrice;
-	private long stockQuantity;
+	
+	@NotNull(message = "Unit price is required.")
+	@Positive(message = "Unit price must be positive.")
+	private Double unitPrice;
+	
+	@Positive(message = "Stock quantity must be positive.")
+	private Long stockQuantity;
 	
 	private boolean isAvailable;
 	
@@ -38,16 +54,16 @@ public class ProductDTO
 	public void setCategory(String category) {
 		this.category = category;
 	}
-	public double getUnitPrice() {
+	public Double getUnitPrice() {
 		return unitPrice;
 	}
-	public void setUnitPrice(double unitPrice) {
+	public void setUnitPrice(Double unitPrice) {
 		this.unitPrice = unitPrice;
 	}
-	public long getStockQuantity() {
+	public Long getStockQuantity() {
 		return stockQuantity;
 	}
-	public void setStockQuantity(long stockQuantity) {
+	public void setStockQuantity(Long stockQuantity) {
 		this.stockQuantity = stockQuantity;
 	}
 	public boolean getIsAvailable() {
